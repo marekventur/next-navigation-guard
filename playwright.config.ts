@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 30000;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -29,9 +29,11 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: `cd example && PORT=${PORT} pnpm dev`,
-    port: Number(PORT),
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: process.env.CI
+    ? undefined
+    : {
+        command: `cd example && PORT=${PORT} pnpm dev`,
+        port: Number(PORT),
+        reuseExistingServer: false,
+      },
 });
