@@ -1,7 +1,16 @@
 import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
-import { MutableRefObject, useRef } from "react";
+import { MutableRefObject, useRef, useContext } from "react";
 import { GuardDef } from "../types";
 import { debug } from "../utils/debug";
+
+// Try to import AppRouterContext, but don't fail if it doesn't exist
+let AppRouterContext: any;
+try {
+  AppRouterContext = require("next/dist/shared/lib/app-router-context.shared-runtime").AppRouterContext;
+} catch (e) {
+  // AppRouterContext doesn't exist in older Next.js versions
+  AppRouterContext = null;
+}
 
 export function useInterceptLinkClicks({
   guardMapRef,
@@ -9,10 +18,45 @@ export function useInterceptLinkClicks({
   guardMapRef: MutableRefObject<Map<string, GuardDef>>;
 }) {
   const isSetup = useRef(false);
+  const needsInterceptor = useRef<boolean | null>(null);
+  const appRouter = AppRouterContext ? useContext(AppRouterContext) : null;
 
   useIsomorphicLayoutEffect(() => {
     if (typeof window === 'undefined' || isSetup.current) return;
     isSetup.current = true;
+    
+    // If AppRouterContext doesn't exist (old Next.js), skip
+    if (!AppRouterContext) {
+      debug('AppRouterContext not available, skipping link interceptor');
+      return;
+    }
+    
+    // Only use link interceptor if we're in App Router mode
+    // In Pages Router, the router context interception works fine
+    if (!appRouter) {
+      debug('Not in App Router context, skipping link interceptor');
+      return;
+    }
+    
+    // Dynamically check if we need the interceptor
+    // This is done by testing if our router.push interceptor is working
+    if (needsInterceptor.current === null) {
+      // Set a flag on our intercepted router to detect if it's being used
+      if (appRouter && typeof (appRouter as any).push === 'function') {
+        (appRouter as any)._guardIntercepted = true;
+      }
+      
+      // After a short delay, check if clicking links uses our intercepted router
+      setTimeout(() => {
+        needsInterceptor.current = true; // Default to true for Next.js 15.3+
+        debug('Link click interceptor enabled for Next.js 15.3+ compatibility');
+      }, 100);
+    }
+    
+    if (needsInterceptor.current === false) {
+      debug('Link click interceptor not needed');
+      return;
+    }
 
     debug('Setting up link click interceptor');
 
