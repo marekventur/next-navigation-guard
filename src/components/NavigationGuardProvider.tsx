@@ -3,6 +3,7 @@
 import React, { useRef } from "react";
 import { useInterceptPageUnload } from "../hooks/useInterceptPageUnload";
 import { useInterceptPopState } from "../hooks/useInterceptPopState";
+import { useInterceptLinkClicks } from "../hooks/useInterceptLinkClicks";
 import { GuardDef } from "../types";
 import { InterceptAppRouterProvider } from "./InterceptAppRouterProvider";
 import { InterceptPagesRouterProvider } from "./InterceptPagesRouterProvider";
@@ -17,6 +18,7 @@ export function NavigationGuardProvider({
 
   useInterceptPopState({ guardMapRef });
   useInterceptPageUnload({ guardMapRef });
+  useInterceptLinkClicks({ guardMapRef });
 
   return (
     <NavigationGuardProviderContext.Provider value={guardMapRef}>

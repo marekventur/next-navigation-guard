@@ -1,7 +1,8 @@
-import { useCallback, useContext, useId, useState } from "react";
+import { useCallback, useContext, useId, useRef, useState } from "react";
 import { NavigationGuardProviderContext } from "../components/NavigationGuardProviderContext";
 import { NavigationGuardCallback, NavigationGuardOptions } from "../types";
 import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
+import { debug } from "../utils/debug";
 
 // Should memoize callback func
 export function useNavigationGuard(options: NavigationGuardOptions) {
@@ -18,12 +19,18 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
 
   useIsomorphicLayoutEffect(() => {
     const callback: NavigationGuardCallback = (params) => {
+      debug(`Guard callback called with:`, params);
       if (options.confirm) {
+        debug(`Using sync confirm function`);
         return options.confirm(params);
       }
 
+      debug(`Using async confirm, setting pending state`);
       return new Promise<boolean>((resolve) => {
-        setPendingState({ resolve });
+        // Small delay to ensure state update propagates
+        setTimeout(() => {
+          setPendingState({ resolve });
+        }, 0);
       });
     };
 
@@ -37,7 +44,7 @@ export function useNavigationGuard(options: NavigationGuardOptions) {
     return () => {
       guardMapRef.current.delete(callbackId);
     };
-  }, [options.confirm, options.enabled]);
+  }, [callbackId, guardMapRef, options.confirm, options.enabled]);
 
   const active = pendingState !== null;
 
