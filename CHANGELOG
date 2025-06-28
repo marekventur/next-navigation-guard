@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-06-28
+
+### Added
+
+- Support for Next.js 15.3+ Link component which no longer uses router.push()
+- Comprehensive E2E test suite using Playwright ([#28](https://github.com/LayerXcom/next-navigation-guard/pull/28))
+- Support for React 19 ([#18](https://github.com/LayerXcom/next-navigation-guard/pull/18)). @marekventur
+
+### Fixed
+
+- Fix to use Math.random for jest compatibility ([#17](https://github.com/LayerXcom/next-navigation-guard/pull/17)). @tmtmtoo
+- Fix jest import issue ([#14](https://github.com/LayerXcom/next-navigation-guard/pull/14)). @peinguin
+
 ## [0.1.2] - 2024-12-11
 
 ### Fixed
@@ -25,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The initial release of next-navigation-guard.
 
-[unreleased]: https://github.com/LayerXcom/next-navigation-guard/compare/v0.1.2...HEAD
+[unreleased]: https://github.com/LayerXcom/next-navigation-guard/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/LayerXcom/next-navigation-guard/releases/tag/v0.2.0
 [0.1.2]: https://github.com/LayerXcom/next-navigation-guard/releases/tag/v0.1.2
 [0.1.1]: https://github.com/LayerXcom/next-navigation-guard/releases/tag/v0.1.1
 [0.1.0]: https://github.com/LayerXcom/next-navigation-guard/releases/tag/v0.1.0
